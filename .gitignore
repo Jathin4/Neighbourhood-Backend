@@ -1,7 +1,7 @@
 node_modules/
 dist/
 .env
-config_file/webconfig.ini
+config_file/
 firebase/service_account.json
 *.log
 coverage/

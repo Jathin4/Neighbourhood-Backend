@@ -1,0 +1,7 @@
+; Copy to webconfig.ini and fill in real values. Never commit webconfig.ini.
+[database]
+host = CHANGE_ME
+port = 5432
+dbname = postgres
+user = CHANGE_ME
+password = CHANGE_ME

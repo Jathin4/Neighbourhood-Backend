@@ -9,15 +9,19 @@ Three strict layers, enforced by convention (see `/db/functions` for the actual 
 
 ```
 /db/migrations   -> schema DDL (tables, enums, indexes), tracked in schema_migrations
+                     (lives one level above this folder — see repo root)
 /db/functions    -> ALL business logic: PL/pgSQL stored functions, grouped by domain.
                      Validation, state machines, permission checks, SLA/commission
                      calculations, idempotency, audit-log writes — all live here.
 /db/seed         -> demo data matching the resident-app prototype (Jasmine Meadows)
-/app/modules     -> FastAPI routers. One file per domain. Each endpoint:
+/models          -> Pydantic request bodies. One file per domain.
+/modules         -> FastAPI routers. One file per domain. Each endpoint:
                      authenticate -> authorize (coarse role gate) -> validate (Pydantic)
                      -> call exactly ONE DB function -> wrap in the response envelope.
-/app/adapters    -> external vendors (SMS gateway, payment gateway) behind interfaces,
+/database        -> db.py — the asyncpg pool + call_fn/call_fn_one/call_fn_jsonb helpers.
+/adapters        -> external vendors (SMS gateway, payment gateway) behind interfaces,
                      swappable without touching any module or DB function.
+/config_file     -> webconfig.ini (gitignored, local DB credentials).
 ```
 
 Every endpoint returns:
@@ -59,20 +63,21 @@ integer minor units (paise), never floating point.
    python -m venv .venv
    .venv/Scripts/pip install -r requirements.txt   # Windows
    ```
-4. **Run migrations + install DB functions + seed demo data**:
+4. **Run migrations + install DB functions + seed demo data** (script lives in the
+   sibling `db/` folder, alongside the migrations/functions/seed it runs):
    ```bash
-   .venv/Scripts/python scripts/run_migrations.py
+   .venv/Scripts/python ../db/scripts/run_migrations.py
    ```
    Re-running is safe: schema migrations are tracked by filename in `schema_migrations`
    and only new ones apply; DB functions (`CREATE OR REPLACE`) and seed data
    (`ON CONFLICT ...`) are idempotent and always re-applied.
 5. **Run the API**:
    ```bash
-   .venv/Scripts/uvicorn app.main:app --reload --port 4000
+   .venv/Scripts/uvicorn main:app --reload --port 4000
    ```
 6. **Export the OpenAPI spec** (keeps `openapi/openapi.json` current with the actual routes):
    ```bash
-   .venv/Scripts/python scripts/export_openapi.py
+   .venv/Scripts/python ../db/scripts/export_openapi.py
    ```
 
 ## Demo credentials (seeded)
@@ -110,7 +115,7 @@ stubs behind the same adapter interface — swap in FCM/Twilio/SES by implementi
 `NotificationAdapter`).
 
 Intentionally scaffolded, not implemented (Phase 2 per the product spec):
-`ai_module` — community assistant Q&A and AI-personalized provider recommendations.
+`modules/ai.py` — community assistant Q&A and AI-personalized provider recommendations.
 The interfaces exist and fall back to the plain marketplace ranking so nothing breaks;
 implementing them is future work, and they must never be wired to refunds,
 suspensions, or dispute decisions per the product guardrails.

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+app/firebase/service_account.json
+*.log
+coverage/
+.venv/
+__pycache__/
+*.pyc

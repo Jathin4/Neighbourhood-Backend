@@ -92,7 +92,7 @@ async def list_staff(provider_id: int = Query(...), user: AuthUser = Depends(req
 
 @router.patch("/providers/me/staff/{staff_id}")
 async def update_staff(staff_id: int, provider_id: int = Query(...), body: UpdateStaffBody = ..., user: AuthUser = Depends(require_auth)):
-    row = record_to_dict(await call_fn_one("fn_update_provider_staff", [user.user_id, provider_id, staff_id, body.role, body.active]))
+    row = record_to_dict(await call_fn_one("fn_update_provider_staff", [user.user_id, provider_id, staff_id, body.role, body.active, body.name]))
     return ok(row)
 
 

@@ -39,6 +39,7 @@ class AddStaffBody(BaseModel):
 class UpdateStaffBody(BaseModel):
     role: str | None = None
     active: bool | None = None
+    name: str | None = None
 
 
 class AvailabilityBody(BaseModel):

@@ -80,7 +80,7 @@ async def update_service_catalogue(provider_id: int = Query(...), body: ServiceC
 
 @router.post("/providers/me/staff")
 async def add_staff(provider_id: int = Query(...), body: AddStaffBody = ..., user: AuthUser = Depends(require_auth)):
-    row = record_to_dict(await call_fn_one("fn_add_provider_staff", [user.user_id, provider_id, body.staff_phone, body.role]))
+    row = record_to_dict(await call_fn_one("fn_add_provider_staff", [user.user_id, provider_id, body.staff_phone, body.role, body.name]))
     return ok(row, 201)
 
 

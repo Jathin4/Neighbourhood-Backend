@@ -33,6 +33,7 @@ class ServiceCatalogueBody(BaseModel):
 class AddStaffBody(BaseModel):
     staff_phone: str
     role: str = "technician"
+    name: str | None = None
 
 
 class UpdateStaffBody(BaseModel):
